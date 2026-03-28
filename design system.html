@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lifestyle Money — Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* === CORE PALETTE === */
+    --black-pure: #050505;
+    --black-deep: #0a0f0c;
+    --black-green: #0d1a12;
+    --dark-green-1: #132618;
+    --dark-green-2: #1a3a2a;
+    --dark-green-3: #2d5a3d;
+    --green-accent: #3d7a5a;
+    --green-bright: #4ebd73;
+    --green-glow: #6feca3;
+    
+    /* === NEUTRALS === */
+    --white-soft: #f0f5f1;
+    --white-muted: #c8d5cb;
+    --gray-green: #7a9a85;
+    
+    /* === GLASS === */
+    --glass-bg: rgba(13, 26, 18, 0.55);
+    --glass-bg-hover: rgba(13, 26, 18, 0.7);
+    --glass-border: rgba(78, 189, 115, 0.15);
+    --glass-border-hover: rgba(78, 189, 115, 0.35);
+    --glass-blur: 16px;
+    --glass-blur-heavy: 24px;
+    
+    /* === TYPOGRAPHY === */
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    
+    /* === SPACING === */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+    --space-2xl: 64px;
+    --space-3xl: 96px;
+    
+    /* === RADIUS === */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+  }
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    background: var(--black-pure);
+    color: var(--white-soft);
+    font-family: var(--font-body);
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  
+  /* === BG IMAGE === */
+  .bg-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: url('/mnt/user-data/uploads/gilles-lambert-mSK5nNsAsLY-unsplash.jpg') center/cover no-repeat;
+    opacity: 0.3;
+    filter: brightness(0.5) saturate(1.2);
+  }
+  
+  .bg-gradient {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background: 
+      radial-gradient(ellipse at 20% 0%, rgba(45, 90, 61, 0.2) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(13, 26, 18, 0.8) 0%, transparent 60%),
+      linear-gradient(180deg, rgba(5,5,5,0.3) 0%, rgba(5,5,5,0.7) 50%, rgba(5,5,5,0.95) 100%);
+  }
+  
+  .content {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-xl);
+  }
+  
+  /* === HEADER === */
+  .header {
+    padding: var(--space-3xl) 0 var(--space-2xl);
+    text-align: center;
+  }
+  
+  .header-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    border: 1px solid var(--glass-border);
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: 100px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    margin-bottom: var(--space-lg);
+    animation: fadeInUp 0.8s ease both;
+  }
+  
+  .header h1 {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    color: var(--white-soft);
+    animation: fadeInUp 0.8s ease 0.15s both;
+  }
+  
+  .header h1 em {
+    font-style: italic;
+    color: var(--green-bright);
+  }
+  
+  .header-sub {
+    font-size: 18px;
+    color: var(--gray-green);
+    margin-top: var(--space-md);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    animation: fadeInUp 0.8s ease 0.3s both;
+  }
+  
+  /* === SECTIONS === */
+  .section {
+    margin-bottom: var(--space-3xl);
+  }
+  
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--green-accent);
+    margin-bottom: var(--space-sm);
+  }
+  
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700;
+    margin-bottom: var(--space-lg);
+    line-height: 1.2;
+  }
+  
+  .section-desc {
+    color: var(--gray-green);
+    max-width: 700px;
+    margin-bottom: var(--space-xl);
+    font-size: 16px;
+  }
+  
+  /* === COLOR PALETTE === */
+  .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-md);
+  }
+  
+  .color-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .color-card:hover {
+    border-color: var(--glass-border-hover);
+    transform: translateY(-4px);
+  }
+  
+  .color-swatch {
+    height: 80px;
+    width: 100%;
+  }
+  
+  .color-info {
+    padding: var(--space-md);
+  }
+  
+  .color-name {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--white-soft);
+    margin-bottom: 2px;
+  }
+  
+  .color-hex {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--gray-green);
+  }
+  
+  /* === TYPOGRAPHY === */
+  .type-specimens {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+  
+  .type-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    transition: border-color 0.3s;
+  }
+  
+  .type-card:hover {
+    border-color: var(--glass-border-hover);
+  }
+  
+  .type-role {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-bottom: var(--space-md);
+  }
+  
+  .type-sample-display {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--white-soft);
+    margin-bottom: var(--space-md);
+  }
+  
+  .type-sample-body {
+    font-family: var(--font-body);
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--white-muted);
+    margin-bottom: var(--space-md);
+  }
+  
+  .type-sample-mono {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--green-bright);
+    background: rgba(78, 189, 115, 0.08);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid var(--green-bright);
+  }
+  
+  .type-meta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--gray-green);
+    margin-top: var(--space-sm);
+  }
+  
+  /* === GLASS COMPONENTS === */
+  .components-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-lg);
+  }
+  
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--green-bright), transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  
+  .glass-card:hover {
+    border-color: var(--glass-border-hover);
+    background: var(--glass-bg-hover);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(78, 189, 115, 0.05);
+  }
+  
+  .glass-card:hover::before {
+    opacity: 1;
+  }
+  
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    background: rgba(78, 189, 115, 0.1);
+    border: 1px solid rgba(78, 189, 115, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: var(--space-lg);
+  }
+  
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+  }
+  
+  .card-text {
+    font-size: 15px;
+    color: var(--gray-green);
+    line-height: 1.6;
+  }
+  
+  /* === BUTTONS === */
+  .buttons-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin-top: var(--space-xl);
+  }
+  
+  .btn {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    padding: 14px 32px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-primary {
+    background: var(--green-bright);
+    color: var(--black-pure);
+    font-weight: 700;
+  }
+  
+  .btn-primary:hover {
+    background: var(--green-glow);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(78, 189, 115, 0.25);
+  }
+  
+  .btn-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    color: var(--white-soft);
+  }
+  
+  .btn-glass:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--glass-border-hover);
+    transform: translateY(-2px);
+  }
+  
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--green-accent);
+    color: var(--green-bright);
+  }
+  
+  .btn-outline:hover {
+    background: rgba(78, 189, 115, 0.08);
+    border-color: var(--green-bright);
+    transform: translateY(-2px);
+  }
+  
+  .btn-ghost {
+    background: transparent;
+    color: var(--gray-green);
+    padding: 14px 16px;
+  }
+  
+  .btn-ghost:hover {
+    color: var(--white-soft);
+  }
+  
+  .btn-ghost .arrow {
+    display: inline-block;
+    transition: transform 0.3s;
+    margin-left: 6px;
+  }
+  
+  .btn-ghost:hover .arrow {
+    transform: translateX(4px);
+  }
+  
+  /* === INPUT === */
+  .input-demo {
+    margin-top: var(--space-xl);
+    max-width: 500px;
+  }
+  
+  .input-group {
+    display: flex;
+    gap: var(--space-sm);
+  }
+  
+  .input-glass {
+    flex: 1;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: 14px var(--space-lg);
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--white-soft);
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  
+  .input-glass::placeholder {
+    color: var(--gray-green);
+  }
+  
+  .input-glass:focus {
+    border-color: var(--green-bright);
+    box-shadow: 0 0 0 3px rgba(78, 189, 115, 0.1);
+  }
+  
+  /* === ANIMATION LANGUAGE === */
+  .anim-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+  }
+  
+  .anim-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    text-align: center;
+  }
+  
+  .anim-preview {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-lg);
+  }
+  
+  .anim-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--green-bright);
+  }
+  
+  .anim-dot.breathe {
+    animation: breathe 3s ease-in-out infinite;
+  }
+  
+  .anim-dot.float {
+    animation: float 4s ease-in-out infinite;
+  }
+  
+  .anim-dot.pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+  
+  .anim-bar {
+    width: 60px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--green-bright);
+    animation: slideReveal 2s ease-in-out infinite;
+    transform-origin: left;
+  }
+  
+  .anim-name {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--green-bright);
+    margin-bottom: var(--space-xs);
+  }
+  
+  .anim-desc {
+    font-size: 13px;
+    color: var(--gray-green);
+  }
+  
+  /* === IMAGE GEN SECTION === */
+  .prompts-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+  
+  .prompt-item {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    display: flex;
+    gap: var(--space-lg);
+    align-items: flex-start;
+    transition: border-color 0.3s;
+  }
+  
+  .prompt-item:hover {
+    border-color: var(--glass-border-hover);
+  }
+  
+  .prompt-layer {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    background: rgba(78, 189, 115, 0.1);
+    padding: 4px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  
+  .prompt-content {
+    flex: 1;
+  }
+  
+  .prompt-title {
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--white-soft);
+    margin-bottom: 4px;
+  }
+  
+  .prompt-text {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--gray-green);
+    line-height: 1.6;
+    font-style: italic;
+  }
+  
+  /* === TOKENS TABLE === */
+  .tokens-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+  }
+  
+  @media (max-width: 600px) {
+    .tokens-grid { grid-template-columns: 1fr; }
+  }
+  
+  .token-group {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+  }
+  
+  .token-group-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-bottom: var(--space-md);
+  }
+  
+  .token-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(78, 189, 115, 0.05);
+  }
+  
+  .token-row:last-child { border: none; }
+  
+  .token-label {
+    font-size: 13px;
+    color: var(--white-muted);
+  }
+  
+  .token-value {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--gray-green);
+  }
+  
+  /* === HERO PREVIEW === */
+  .hero-preview {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    text-align: center;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl);
+  }
+
+  .hero-preview video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  .hero-preview .glass-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: rgba(5, 5, 5, 0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid var(--glass-border);
+  }
+
+  .hero-preview .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-preview::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: radial-gradient(circle at 50% 0%, rgba(78,189,115,0.08), transparent 70%);
+    pointer-events: none;
+  }
+  
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-bottom: var(--space-lg);
+  }
+  
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 54px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: var(--space-lg);
+  }
+  
+  .hero-title em {
+    font-style: italic;
+    color: var(--green-bright);
+  }
+  
+  .hero-body {
+    font-size: 18px;
+    color: var(--gray-green);
+    max-width: 560px;
+    margin: 0 auto var(--space-xl);
+    line-height: 1.7;
+  }
+  
+  /* === DIVIDER === */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+    margin: var(--space-2xl) 0;
+  }
+  
+  /* === FOOTER === */
+  .footer-note {
+    text-align: center;
+    padding: var(--space-2xl) 0 var(--space-xl);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--gray-green);
+    letter-spacing: 1px;
+  }
+  
+  /* === ANIMATIONS === */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.5); opacity: 1; }
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+  
+  @keyframes pulseGlow {
+    0%, 100% { 
+      box-shadow: 0 0 0px var(--green-bright);
+      opacity: 0.7;
+    }
+    50% { 
+      box-shadow: 0 0 20px var(--green-bright), 0 0 40px rgba(78, 189, 115, 0.3);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideReveal {
+    0%, 100% { transform: scaleX(0.3); opacity: 0.4; }
+    50% { transform: scaleX(1); opacity: 1; }
+  }
+  
+  /* === RESPONSIVE === */
+  @media (max-width: 768px) {
+    .content { padding: var(--space-lg); }
+    .components-grid { grid-template-columns: 1fr; }
+    .buttons-row { flex-direction: column; align-items: flex-start; }
+    .input-group { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="bg-gradient"></div>
+
+<div class="content">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-badge">Design System v1.0</div>
+    <h1>Lifestyle <em>Money</em></h1>
+    <p class="header-sub">Sistema visual completo — dark botanical + glassmorphism</p>
+  </header>
+
+  <!-- 01. PALETTE -->
+  <section class="section">
+    <div class="section-label">01 — Paleta</div>
+    <h2 class="section-title">Cores</h2>
+    <p class="section-desc">Extraída da monstera. Fundo ultra-escuro com verdes orgânicos e accent vibrante. Sem cores quentes — tudo é frio, denso, natural.</p>
+    
+    <div class="palette-grid">
+      <div class="color-card">
+        <div class="color-swatch" style="background: #050505;"></div>
+        <div class="color-info">
+          <div class="color-name">Black Pure</div>
+          <div class="color-hex">#050505</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #0d1a12;"></div>
+        <div class="color-info">
+          <div class="color-name">Black Green</div>
+          <div class="color-hex">#0d1a12</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #132618;"></div>
+        <div class="color-info">
+          <div class="color-name">Dark Green 1</div>
+          <div class="color-hex">#132618</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #1a3a2a;"></div>
+        <div class="color-info">
+          <div class="color-name">Dark Green 2</div>
+          <div class="color-hex">#1a3a2a</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #2d5a3d;"></div>
+        <div class="color-info">
+          <div class="color-name">Dark Green 3</div>
+          <div class="color-hex">#2d5a3d</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #3d7a5a;"></div>
+        <div class="color-info">
+          <div class="color-name">Green Accent</div>
+          <div class="color-hex">#3d7a5a</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #4ebd73;"></div>
+        <div class="color-info">
+          <div class="color-name">Green Bright</div>
+          <div class="color-hex">#4ebd73</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #6feca3;"></div>
+        <div class="color-info">
+          <div class="color-name">Green Glow</div>
+          <div class="color-hex">#6feca3</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 02. TYPOGRAPHY -->
+  <section class="section">
+    <div class="section-label">02 — Tipografia</div>
+    <h2 class="section-title">Fontes</h2>
+    <p class="section-desc">Trio tipográfico: display serifado com peso, body sans clean, mono pra dados e badges. Hierarquia forte com contraste de personalidade.</p>
+    
+    <div class="type-specimens">
+      <div class="type-card">
+        <div class="type-role">Display — Headlines & Títulos</div>
+        <div class="type-sample-display">Negócios foram feitos pra financiar a <em style="color: var(--green-bright); font-style: italic;">vida que você quer.</em></div>
+        <div class="type-meta">Playfair Display · 700 · Tracking -1px</div>
+      </div>
+      
+      <div class="type-card">
+        <div class="type-role">Body — Textos & Parágrafos</div>
+        <div class="type-sample-body">Se não é mais simples e mais lucrativo, eu nem faço. O Lifestyle Money é uma metodologia pra quem quer construir negócios que financiam liberdade — não escravidão disfarçada de sucesso.</div>
+        <div class="type-meta">DM Sans · 300 · Line-height 1.8</div>
+      </div>
+      
+      <div class="type-card">
+        <div class="type-role">Mono — Badges, Dados & CTAs</div>
+        <div class="type-sample-mono">LIFESTYLE MONEY · AI AUTOMATION · EXPLORER</div>
+        <div class="type-meta">JetBrains Mono · 400 · Tracking 2-4px</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 03. GLASS COMPONENTS -->
+  <section class="section">
+    <div class="section-label">03 — Componentes Glass</div>
+    <h2 class="section-title">Glassmorphism</h2>
+    <p class="section-desc">Cards, botões e inputs com fundo translúcido, blur e bordas sutis. Hover states com glow verde e elevação progressiva.</p>
+    
+    <div class="components-grid">
+      <div class="glass-card">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Automação com IA</div>
+        <div class="card-text">Construa sistemas que trabalham enquanto você vive. Não o contrário.</div>
+      </div>
+      
+      <div class="glass-card">
+        <div class="card-icon">🧭</div>
+        <div class="card-title">Consultoria Estratégica</div>
+        <div class="card-text">Encontre o caminho mais curto entre onde você está e a vida que quer viver.</div>
+      </div>
+      
+      <div class="glass-card">
+        <div class="card-icon">🌿</div>
+        <div class="card-title">Lifestyle First</div>
+        <div class="card-text">O negócio se adapta ao seu estilo de vida. Nunca o contrário.</div>
+      </div>
+    </div>
+    
+    <!-- BUTTONS -->
+    <div class="buttons-row">
+      <button class="btn btn-primary">Começar agora</button>
+      <button class="btn btn-glass">Saiba mais</button>
+      <button class="btn btn-outline">Ver portfólio</button>
+      <button class="btn btn-ghost">Explorar <span class="arrow">→</span></button>
+    </div>
+    
+    <!-- INPUT -->
+    <div class="input-demo">
+      <div class="input-group">
+        <input class="input-glass" type="email" placeholder="Seu melhor e-mail">
+        <button class="btn btn-primary">Entrar</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 04. ANIMATION LANGUAGE -->
+  <section class="section">
+    <div class="section-label">04 — Movimento</div>
+    <h2 class="section-title">Linguagem de Animação</h2>
+    <p class="section-desc">Orgânico, lento, respirando. Nada mecânico. Tudo parece vivo e natural — como plantas crescendo.</p>
+    
+    <div class="anim-grid">
+      <div class="anim-card">
+        <div class="anim-preview">
+          <div class="anim-dot breathe"></div>
+        </div>
+        <div class="anim-name">Breathe</div>
+        <div class="anim-desc">Scale + opacity em loop. Pra loading states e ícones vivos.</div>
+      </div>
+      
+      <div class="anim-card">
+        <div class="anim-preview">
+          <div class="anim-dot float"></div>
+        </div>
+        <div class="anim-name">Float</div>
+        <div class="anim-desc">Translate Y suave. Pra elementos decorativos e partículas.</div>
+      </div>
+      
+      <div class="anim-card">
+        <div class="anim-preview">
+          <div class="anim-dot pulse-glow"></div>
+        </div>
+        <div class="anim-name">Pulse Glow</div>
+        <div class="anim-desc">Box-shadow pulsante. Pra CTAs e notificações.</div>
+      </div>
+      
+      <div class="anim-card">
+        <div class="anim-preview">
+          <div class="anim-bar"></div>
+        </div>
+        <div class="anim-name">Slide Reveal</div>
+        <div class="anim-desc">Scale X progressivo. Pra barras, dividers e entrances.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 05. AI IMAGE GEN PROMPTS -->
+  <section class="section">
+    <div class="section-label">05 — Assets de IA</div>
+    <h2 class="section-title">Imagens para Gerar</h2>
+    <p class="section-desc">Prompts organizados por camada de composição. Cada asset gerado vira uma layer animável do sistema visual.</p>
+    
+    <div class="prompts-list">
+      <div class="prompt-item">
+        <div class="prompt-layer">Fog</div>
+        <div class="prompt-content">
+          <div class="prompt-title">Névoa verde entre folhas</div>
+          <div class="prompt-text">"Green ethereal fog flowing between dark monstera leaves, volumetric, cinematic lighting, black background, 8k"</div>
+        </div>
+      </div>
+      
+      <div class="prompt-item">
+        <div class="prompt-layer">Light</div>
+        <div class="prompt-content">
+          <div class="prompt-title">God rays através das folhas</div>
+          <div class="prompt-text">"Volumetric green light rays piercing through tropical leaf silhouettes, dark moody atmosphere, emerald tones, cinematic"</div>
+        </div>
+      </div>
+      
+      <div class="prompt-item">
+        <div class="prompt-layer">Glass</div>
+        <div class="prompt-content">
+          <div class="prompt-title">Condensação em vidro escuro</div>
+          <div class="prompt-text">"Water condensation droplets on dark glass surface, green tint from behind, macro photography, black background, bokeh"</div>
+        </div>
+      </div>
+      
+      <div class="prompt-item">
+        <div class="prompt-layer">Particle</div>
+        <div class="prompt-content">
+          <div class="prompt-title">Partículas bioluminescentes</div>
+          <div class="prompt-text">"Bioluminescent green particles floating in darkness, firefly-like, organic, ethereal bokeh, black background, 8k"</div>
+        </div>
+      </div>
+      
+      <div class="prompt-item">
+        <div class="prompt-layer">Caustic</div>
+        <div class="prompt-content">
+          <div class="prompt-title">Luz refratada em água</div>
+          <div class="prompt-text">"Caustic light patterns, emerald green water refraction, dark background, seamless tileable texture, abstract"</div>
+        </div>
+      </div>
+      
+      <div class="prompt-item">
+        <div class="prompt-layer">Leaf</div>
+        <div class="prompt-content">
+          <div class="prompt-title">Folhas isoladas pra parallax</div>
+          <div class="prompt-text">"Single monstera deliciosa leaf, transparent background, dark moody studio lighting, high detail, PNG cutout"</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 06. TOKENS -->
+  <section class="section">
+    <div class="section-label">06 — Tokens</div>
+    <h2 class="section-title">Design Tokens</h2>
+    <p class="section-desc">Valores base pra spacing, radius, glass e motion. Copiar direto pro CSS/Tailwind config.</p>
+    
+    <div class="tokens-grid">
+      <div class="token-group">
+        <div class="token-group-title">Glass</div>
+        <div class="token-row">
+          <span class="token-label">Background</span>
+          <span class="token-value">rgba(13, 26, 18, 0.55)</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">Background Hover</span>
+          <span class="token-value">rgba(13, 26, 18, 0.7)</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">Border</span>
+          <span class="token-value">rgba(78, 189, 115, 0.15)</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">Border Hover</span>
+          <span class="token-value">rgba(78, 189, 115, 0.35)</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">Blur</span>
+          <span class="token-value">16px / 24px</span>
+        </div>
+      </div>
+      
+      <div class="token-group">
+        <div class="token-group-title">Spacing</div>
+        <div class="token-row">
+          <span class="token-label">XS</span>
+          <span class="token-value">4px</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">SM</span>
+          <span class="token-value">8px</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">MD</span>
+          <span class="token-value">16px</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">LG</span>
+          <span class="token-value">24px</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">XL</span>
+          <span class="token-value">40px</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">2XL</span>
+          <span class="token-value">64px</span>
+        </div>
+      </div>
+      
+      <div class="token-group">
+        <div class="token-group-title">Radius</div>
+        <div class="token-row">
+          <span class="token-label">SM</span>
+          <span class="token-value">8px</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">MD</span>
+          <span class="token-value">16px</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">LG</span>
+          <span class="token-value">24px</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">XL</span>
+          <span class="token-value">32px</span>
+        </div>
+      </div>
+      
+      <div class="token-group">
+        <div class="token-group-title">Motion</div>
+        <div class="token-row">
+          <span class="token-label">Easing</span>
+          <span class="token-value">cubic-bezier(0.16, 1, 0.3, 1)</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">Duration Fast</span>
+          <span class="token-value">0.2s</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">Duration Normal</span>
+          <span class="token-value">0.4s</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">Duration Slow</span>
+          <span class="token-value">0.8s</span>
+        </div>
+        <div class="token-row">
+          <span class="token-label">Loop Breathe</span>
+          <span class="token-value">3s ease-in-out</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 07. HERO PREVIEW -->
+  <section class="section">
+    <div class="section-label">07 — Preview</div>
+    <h2 class="section-title">Hero Section</h2>
+    <p class="section-desc">Preview de como tudo se junta em um hero real.</p>
+    
+    <div class="hero-preview">
+      <video autoplay muted loop playsinline>
+        <source src="0328_loop.webm" type="video/webm">
+    <source src="0328_loop.mp4" type="video/mp4">
+      </video>
+      <div class="glass-overlay"></div>
+      <div class="hero-content">
+        <div class="hero-eyebrow">Lifestyle Money</div>
+        <h2 class="hero-title">Negócios que financiam <em>liberdade.</em><br>Não escravidão disfarçada de <em>sucesso.</em></h2>
+        <p class="hero-body">Automação com IA, estratégia e a mentalidade certa pra construir um negócio que trabalha por você — enquanto você vive.</p>
+        <div style="display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap;">
+          <button class="btn btn-primary">Quero começar</button>
+          <button class="btn btn-glass">Como funciona</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer-note">
+    LIFESTYLE MONEY · DESIGN SYSTEM v1.0 · WILL MONTEIRO · 2026
+  </div>
+
+</div>
+
+</body>
+</html>

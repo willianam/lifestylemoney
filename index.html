@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Lifestyle Money — Aplicação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black-pure: #050505;
+    --black-deep: #0a0f0c;
+    --black-green: #0d1a12;
+    --dark-green-1: #132618;
+    --dark-green-2: #1a3a2a;
+    --dark-green-3: #2d5a3d;
+    --green-accent: #3d7a5a;
+    --green-bright: #4ebd73;
+    --green-glow: #6feca3;
+    --white-soft: #f0f5f1;
+    --white-muted: #c8d5cb;
+    --gray-green: #7a9a85;
+    --glass-bg: rgba(13, 26, 18, 0.55);
+    --glass-bg-hover: rgba(13, 26, 18, 0.7);
+    --glass-border: rgba(78, 189, 115, 0.15);
+    --glass-border-hover: rgba(78, 189, 115, 0.35);
+    --glass-blur: 16px;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black-pure);
+    color: var(--white-soft);
+    font-family: var(--font-body);
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* === BACKGROUND VIDEO === */
+  .bg-video {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .bg-video video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .bg-video::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 5, 5, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* === PROGRESS === */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: var(--green-bright);
+    z-index: 100;
+    transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 12px rgba(78, 189, 115, 0.4);
+  }
+
+  /* === STEP COUNTER === */
+  .step-counter {
+    position: fixed;
+    top: 32px;
+    right: 32px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--gray-green);
+    z-index: 100;
+    transition: opacity 0.4s;
+  }
+
+  .step-counter.hidden { opacity: 0; }
+
+  /* === CONTAINER === */
+  .form-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 580px;
+    padding: 24px;
+  }
+
+  /* === STEP === */
+  .step {
+    display: none;
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .step.active { display: flex; flex-direction: column; }
+
+  /* === MANIFESTO (opening + closing) === */
+  .manifesto {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .manifesto-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    border: 1px solid var(--glass-border);
+    padding: 8px 24px;
+    border-radius: 100px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+  }
+
+  .manifesto-text {
+    font-family: var(--font-display);
+    font-size: clamp(26px, 5vw, 42px);
+    font-weight: 700;
+    line-height: 1.25;
+    max-width: 520px;
+  }
+
+  .manifesto-text em {
+    font-style: italic;
+    color: var(--green-bright);
+  }
+
+  .manifesto-sub {
+    font-size: 16px;
+    color: var(--gray-green);
+    max-width: 400px;
+  }
+
+  .closing-text {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 700;
+    line-height: 1.3;
+    max-width: 480px;
+    color: var(--white-muted);
+  }
+
+  .closing-sub {
+    font-size: 14px;
+    color: var(--gray-green);
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
+  }
+
+  /* === QUESTION === */
+  .question-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-bottom: 12px;
+  }
+
+  .question-title {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 32px;
+  }
+
+  /* === INPUT === */
+  .input-field {
+    width: 100%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: 16px 24px;
+    font-family: var(--font-body);
+    font-size: 17px;
+    font-weight: 300;
+    color: var(--white-soft);
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .input-field::placeholder { color: var(--gray-green); }
+
+  .input-field:focus {
+    border-color: var(--green-bright);
+    box-shadow: 0 0 0 3px rgba(78, 189, 115, 0.1);
+  }
+
+  textarea.input-field {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  /* === SELECT OPTIONS === */
+  .options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option-btn {
+    width: 100%;
+    text-align: left;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: 16px 24px;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--white-soft);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .option-btn .option-key {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--green-bright);
+    background: rgba(78, 189, 115, 0.1);
+    padding: 4px 10px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .option-btn:hover {
+    border-color: var(--glass-border-hover);
+    background: var(--glass-bg-hover);
+    transform: translateX(6px);
+  }
+
+  .option-btn.selected {
+    border-color: var(--green-bright);
+    background: rgba(78, 189, 115, 0.08);
+  }
+
+  /* === NAV === */
+  .step-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+  }
+
+  .btn {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    padding: 14px 32px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-primary {
+    background: var(--green-bright);
+    color: var(--black-pure);
+    font-weight: 700;
+  }
+
+  .btn-primary:hover {
+    background: var(--green-glow);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(78, 189, 115, 0.25);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--gray-green);
+    padding: 14px 16px;
+  }
+
+  .btn-ghost:hover { color: var(--white-soft); }
+
+  .btn-start {
+    padding: 16px 48px;
+    font-size: 16px;
+  }
+
+  /* === HINT === */
+  .input-hint {
+    font-size: 13px;
+    color: var(--gray-green);
+    margin-top: 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  /* === ENTER HINT === */
+  .enter-hint {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--gray-green);
+    opacity: 0.6;
+  }
+
+  .enter-hint kbd {
+    background: rgba(78, 189, 115, 0.1);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--green-bright);
+  }
+
+  /* === ANIMATIONS === */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeOutUp {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-16px); }
+  }
+
+  @keyframes fadeOutDown {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(16px); }
+  }
+
+  @keyframes glowPulse {
+    0% { box-shadow: 0 0 0 rgba(78, 189, 115, 0); }
+    50% { box-shadow: 0 0 24px rgba(78, 189, 115, 0.4), 0 0 48px rgba(78, 189, 115, 0.15); }
+    100% { box-shadow: 0 0 0 rgba(78, 189, 115, 0); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+
+  /* === INSTAGRAM CARD === */
+  .ig-card {
+    display: none;
+    align-items: center;
+    gap: 14px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    margin-top: 12px;
+    animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .ig-card.visible { display: flex; }
+
+  .ig-card svg { flex-shrink: 0; }
+
+  .ig-card-info { flex: 1; min-width: 0; }
+
+  .ig-card-user {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--green-bright);
+    font-weight: 500;
+  }
+
+  .ig-card-user a {
+    color: var(--green-bright);
+    text-decoration: none;
+  }
+
+  .ig-card-user a:hover { text-decoration: underline; }
+
+  .ig-card-msg {
+    font-size: 13px;
+    color: var(--gray-green);
+    margin-top: 2px;
+  }
+
+  .btn-primary.glow { animation: glowPulse 0.6s ease; }
+  .input-field.shake { animation: shake 0.3s ease; }
+
+  .option-btn.stagger { animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+  /* === MOBILE === */
+  @media (max-width: 600px) {
+    body {
+      align-items: flex-start;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .form-container {
+      padding: 24px 20px;
+      padding-top: 56px;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .step-counter { top: 20px; right: 20px; }
+
+    /* Typography */
+    .manifesto-text { font-size: clamp(22px, 6vw, 32px); }
+    .manifesto { gap: 28px; }
+    .question-title { margin-bottom: 24px; }
+
+    /* Touch targets ≥ 48px */
+    .option-btn { padding: 18px 20px; min-height: 52px; }
+    .btn { min-height: 48px; }
+    .btn-ghost { min-width: 48px; min-height: 48px; display: flex; align-items: center; justify-content: center; }
+    .btn-start { padding: 16px 40px; }
+
+    /* Performance — remove backdrop-filter from repeated elements */
+    .bg-video::after { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+    .input-field { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(13, 26, 18, 0.7); }
+    .option-btn { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(13, 26, 18, 0.7); }
+    .ig-card { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(13, 26, 18, 0.7); }
+
+    /* Hide keyboard hints */
+    .enter-hint { display: none; }
+    .step-nav { gap: 12px; }
+
+    /* Textarea */
+    textarea.input-field { min-height: 100px; max-height: 150px; resize: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- BG VIDEO -->
+<div class="bg-video">
+  <video autoplay muted loop playsinline>
+    <source src="0328_loop.webm" type="video/webm">
+    <source src="0328_loop.mp4" type="video/mp4">
+  </video>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar" id="progress" style="width: 0%"></div>
+<div class="step-counter hidden" id="stepCounter">01 / 06</div>
+
+<!-- FORM -->
+<div class="form-container">
+
+  <!-- STEP 0: MANIFESTO -->
+  <div class="step active" data-step="0">
+    <div class="manifesto">
+      <div class="manifesto-badge">Lifestyle Money</div>
+      <h1 class="manifesto-text">
+        Negócios foram feitos pra financiar sua <em>vida.</em><br>
+        Não consumir <em>ela.</em>
+      </h1>
+      <p class="manifesto-sub">Eu monto sua operação digital inteira, posicionamento, funil, páginas e tráfego. Você só fatura. Se já tem resultado, aplique abaixo.</p>
+      <button class="btn btn-primary btn-start" onclick="goTo(1)">Começar</button>
+    </div>
+  </div>
+
+  <!-- STEP 1: NOME -->
+  <div class="step" data-step="1">
+    <div class="question-label">01 / 06</div>
+    <h2 class="question-title">Qual é o seu nome?</h2>
+    <input class="input-field" type="text" id="nome" placeholder="Primeiro nome" autocomplete="given-name" autofocus>
+    <div class="step-nav">
+      <button class="btn btn-ghost" onclick="goTo(0)">&larr;</button>
+      <div class="enter-hint">Pressione <kbd>Enter</kbd></div>
+      <button class="btn btn-primary" id="btnNome" disabled onclick="goTo(2)">Continuar</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: INSTAGRAM/SITE -->
+  <div class="step" data-step="2">
+    <div class="question-label">02 / 06</div>
+    <h2 class="question-title" data-personalize="{name}, me manda seu Instagram ou site — quero entender onde você tá hoje.">Me manda seu Instagram ou site — quero entender onde você tá hoje.</h2>
+    <input class="input-field" type="text" id="instagram" placeholder="@seuuser ou url">
+    <div class="ig-card" id="igCard">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--green-bright)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="var(--green-bright)" stroke="none"/></svg>
+      <div class="ig-card-info">
+        <div class="ig-card-user" id="igUser"></div>
+        <div class="ig-card-msg">Vou dar uma olhada no seu perfil</div>
+      </div>
+    </div>
+    <p class="input-hint">Para entender seu posicionamento atual.</p>
+    <div class="step-nav">
+      <button class="btn btn-ghost" onclick="goTo(1)">&larr;</button>
+      <div class="enter-hint">Pressione <kbd>Enter</kbd></div>
+      <button class="btn btn-primary" id="btnInsta" disabled onclick="goTo(3)">Continuar</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: NICHO -->
+  <div class="step" data-step="3">
+    <div class="question-label">03 / 06</div>
+    <h2 class="question-title">Em que mercado você atua?</h2>
+    <input class="input-field" type="text" id="nicho" placeholder="Ex: saúde, beleza, educação, SaaS, serviços...">
+    <div class="step-nav">
+      <button class="btn btn-ghost" onclick="goTo(2)">&larr;</button>
+      <div class="enter-hint">Pressione <kbd>Enter</kbd></div>
+      <button class="btn btn-primary" id="btnNicho" disabled onclick="goTo(4)">Continuar</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: FATURAMENTO (auto-avança) -->
+  <div class="step" data-step="4">
+    <div class="question-label">04 / 06</div>
+    <h2 class="question-title">Faturamento mensal atual</h2>
+    <div class="options-grid">
+      <button class="option-btn" onclick="selectRevenue(this, 'Ainda não faturo')">
+        <span class="option-key">A</span> Ainda não faturo
+      </button>
+      <button class="option-btn" onclick="selectRevenue(this, 'Até R$10k')">
+        <span class="option-key">B</span> Até R$10k
+      </button>
+      <button class="option-btn" onclick="selectRevenue(this, 'R$10k — R$30k')">
+        <span class="option-key">C</span> R$10k — R$30k
+      </button>
+      <button class="option-btn" onclick="selectRevenue(this, 'R$30k — R$100k')">
+        <span class="option-key">D</span> R$30k — R$100k
+      </button>
+      <button class="option-btn" onclick="selectRevenue(this, 'R$100k+')">
+        <span class="option-key">E</span> R$100k+
+      </button>
+    </div>
+    <div class="step-nav" style="margin-top: 24px;">
+      <button class="btn btn-ghost" onclick="goTo(3)">&larr;</button>
+      <span></span><span></span>
+    </div>
+  </div>
+
+  <!-- STEP 5: MAIOR GARGALO -->
+  <div class="step" data-step="5">
+    <div class="question-label">05 / 06</div>
+    <h2 class="question-title" data-personalize="{name}, o que tá travando seu crescimento agora?">O que tá travando seu crescimento agora?</h2>
+    <textarea class="input-field" id="gargalo" placeholder="Seja direto. Quanto mais contexto, melhor minha análise."></textarea>
+    <div class="step-nav">
+      <button class="btn btn-ghost" onclick="goTo(4)">&larr;</button>
+      <div class="enter-hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd></div>
+      <button class="btn btn-primary" id="btnGargalo" disabled onclick="goTo(6)">Continuar</button>
+    </div>
+  </div>
+
+  <!-- STEP 6: O QUE JÁ TENTOU -->
+  <div class="step" data-step="6">
+    <div class="question-label">06 / 06</div>
+    <h2 class="question-title">O que você já tentou? E o que não funcionou?</h2>
+    <textarea class="input-field" id="tentou" placeholder="Agência, gestor de tráfego, mentoria, curso..."></textarea>
+    <div class="step-nav">
+      <button class="btn btn-ghost" onclick="goTo(5)">&larr;</button>
+      <div class="enter-hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd></div>
+      <button class="btn btn-primary" id="btnTentou" disabled onclick="goTo(7)">Finalizar</button>
+    </div>
+  </div>
+
+  <!-- STEP 7: ENCERRAMENTO + ENVIO -->
+  <div class="step" data-step="7">
+    <div class="manifesto">
+      <div class="manifesto-badge">Aplicação pronta</div>
+      <h2 class="closing-text" data-personalize="{name}, sua aplicação tá pronta.">Sua aplicação tá pronta.</h2>
+      <p class="closing-sub">Nada fica salvo nessa página. Se você não enviar agora, eu nunca vou saber que você esteve aqui.</p>
+      <button class="btn btn-primary btn-start" onclick="submitForm()">Enviar aplicação no WhatsApp</button>
+      <button class="btn btn-ghost" onclick="goTo(5)">&larr; Voltar e editar</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const totalSteps = 6;
+  let current = 0;
+  let userName = '';
+
+  const progress = document.getElementById('progress');
+  const counter = document.getElementById('stepCounter');
+
+  function updateProgress(step) {
+    if (step === 0 || step === 8) {
+      progress.style.width = step === 8 ? '100%' : '0%';
+      counter.classList.add('hidden');
+    } else {
+      progress.style.width = (step / totalSteps) * 100 + '%';
+      counter.textContent = String(step).padStart(2, '0') + ' / 0' + totalSteps;
+      counter.classList.remove('hidden');
+    }
+  }
+
+  // === PERSONALIZAÇÃO ===
+  function applyPersonalization() {
+    if (!userName) return;
+    document.querySelectorAll('[data-personalize]').forEach(el => {
+      el.textContent = el.dataset.personalize.replace('{name}', userName);
+    });
+  }
+
+  // === TRANSIÇÕES DIRECIONAIS ===
+  function goTo(step) {
+    const direction = step > current ? 'forward' : 'back';
+    const currentEl = document.querySelector('.step.active');
+
+    // Captura o nome ao sair do step 1
+    if (current === 1 && step > 1) {
+      const raw = document.getElementById('nome').value.trim();
+      userName = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+      applyPersonalization();
+    }
+
+    if (currentEl) {
+      const exitAnim = direction === 'forward' ? 'fadeOutUp' : 'fadeOutDown';
+      currentEl.style.animation = `${exitAnim} 0.25s ease forwards`;
+      setTimeout(() => {
+        currentEl.classList.remove('active');
+        currentEl.style.animation = '';
+        showStep(step, direction);
+      }, 250);
+    } else {
+      showStep(step, direction);
+    }
+  }
+
+  function showStep(step, direction = 'forward') {
+    current = step;
+    const el = document.querySelector(`[data-step="${step}"]`);
+    const enterAnim = direction === 'forward' ? 'fadeInUp' : 'fadeInDown';
+    el.classList.add('active');
+    el.style.animation = `${enterAnim} 0.5s cubic-bezier(0.16, 1, 0.3, 1) both`;
+    updateProgress(step);
+
+    // Stagger nas opções de faturamento
+    if (step === 4) {
+      el.querySelectorAll('.option-btn').forEach((btn, i) => {
+        btn.classList.remove('stagger');
+        btn.style.opacity = '0';
+        setTimeout(() => {
+          btn.style.opacity = '';
+          btn.classList.add('stagger');
+          btn.style.animationDelay = `${i * 60}ms`;
+        }, 150);
+      });
+    }
+
+    const input = el.querySelector('input, textarea');
+    if (input) setTimeout(() => input.focus(), 100);
+  }
+
+  // === REVENUE AUTO-ADVANCE ===
+  function selectRevenue(btn, value) {
+    document.querySelectorAll('[data-step="4"] .option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    btn.dataset.value = value;
+    setTimeout(() => goTo(5), 400);
+  }
+
+  function selectRevenueByKey(key) {
+    const map = { a: 0, b: 1, c: 2, d: 3, e: 4 };
+    if (key in map) {
+      document.querySelectorAll('[data-step="4"] .option-btn')[map[key]].click();
+    }
+  }
+
+  // === VALIDAÇÃO + GLOW ===
+  const fields = {
+    nome: 'btnNome',
+    instagram: 'btnInsta',
+    nicho: 'btnNicho',
+    gargalo: 'btnGargalo',
+    tentou: 'btnTentou'
+  };
+
+  Object.entries(fields).forEach(([fieldId, btnId]) => {
+    const field = document.getElementById(fieldId);
+    const btn = document.getElementById(btnId);
+    let wasDisabled = true;
+
+    field.addEventListener('input', () => {
+      const empty = field.value.trim().length === 0;
+      btn.disabled = empty;
+
+      // Glow ao habilitar
+      if (wasDisabled && !empty) {
+        btn.classList.add('glow');
+        btn.addEventListener('animationend', () => btn.classList.remove('glow'), { once: true });
+      }
+      wasDisabled = empty;
+    });
+  });
+
+  // === INSTAGRAM CARD ===
+  const igInput = document.getElementById('instagram');
+  const igCard = document.getElementById('igCard');
+  const igUser = document.getElementById('igUser');
+  let igDebounce = null;
+
+  function extractUsername(val) {
+    val = val.trim();
+    if (!val) return null;
+    // instagram.com/username
+    const igUrlMatch = val.match(/instagram\.com\/([a-zA-Z0-9_.]+)/);
+    if (igUrlMatch) return igUrlMatch[1];
+    // Has a dot but not instagram → probably a website
+    if (val.includes('.') && !val.includes('instagram')) return null;
+    // @username or plain username
+    return val.replace(/^@/, '');
+  }
+
+  igInput.addEventListener('input', () => {
+    clearTimeout(igDebounce);
+    igDebounce = setTimeout(() => {
+      const username = extractUsername(igInput.value);
+      if (username && username.length > 1) {
+        igUser.innerHTML = `<a href="https://instagram.com/${username}" target="_blank" rel="noopener">@${username}</a>`;
+        igCard.classList.add('visible');
+        igCard.style.animation = 'none';
+        igCard.offsetHeight; // reflow
+        igCard.style.animation = '';
+      } else {
+        igCard.classList.remove('visible');
+      }
+    }, 500);
+  });
+
+  // === KEYBOARD ===
+  document.addEventListener('keydown', (e) => {
+    if (current === 4) {
+      selectRevenueByKey(e.key.toLowerCase());
+      return;
+    }
+
+    if (e.key === 'Enter') {
+      const activeStep = document.querySelector('.step.active');
+      const btn = activeStep?.querySelector('.btn-primary');
+      const input = activeStep?.querySelector('input, textarea');
+
+      if (e.target.tagName === 'TEXTAREA' && !e.ctrlKey && !e.metaKey) return;
+
+      if (btn && !btn.disabled) {
+        e.preventDefault();
+        btn.click();
+      } else if (input && input.value.trim().length === 0) {
+        // Shake no campo vazio
+        e.preventDefault();
+        input.classList.add('shake');
+        input.addEventListener('animationend', () => input.classList.remove('shake'), { once: true });
+      }
+    }
+  });
+
+  // === MOBILE: scroll into view on focus ===
+  if ('ontouchstart' in window) {
+    document.querySelectorAll('input, textarea').forEach(input => {
+      input.addEventListener('focus', () => {
+        setTimeout(() => input.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+      });
+    });
+  }
+
+  // === MOBILE: swipe right to go back ===
+  let touchStartX = 0;
+  let touchStartY = 0;
+  document.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+    // Horizontal swipe > 80px, more horizontal than vertical, not on step 0
+    if (dx > 80 && dy < 60 && current > 0) {
+      goTo(current - 1);
+    }
+  }, { passive: true });
+
+  // === SUBMIT VIA WHATSAPP ===
+  const WHATSAPP_NUMBER = '5515981825454';
+
+  function submitForm() {
+    const nome = document.getElementById('nome').value.trim();
+    const instagram = document.getElementById('instagram').value.trim();
+    const nicho = document.getElementById('nicho').value.trim();
+    const faturamento = document.querySelector('[data-step="4"] .option-btn.selected')?.textContent.trim() || '';
+    const gargalo = document.getElementById('gargalo').value.trim();
+    const tentou = document.getElementById('tentou').value.trim();
+
+    const msg = `Oi Will, acabei de aplicar.
+
+*Nome:* ${nome}
+*Instagram:* ${instagram}
+*Mercado:* ${nicho}
+*Faturamento:* ${faturamento}
+*Gargalo:* ${gargalo}
+*Já tentou:* ${tentou}`;
+
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  }
+</script>
+
+</body>
+</html>
