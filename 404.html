@@ -45,12 +45,6 @@
     object-fit: cover;
   }
 
-  .bg-mobile-img {
-    display: none;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
 
   .bg-video::after {
     content: '';
@@ -132,8 +126,6 @@
   }
 
   @media (max-width: 600px) {
-    .bg-video video { display: none; }
-    .bg-mobile-img { display: block; }
     .bg-video::after { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
     h1 { font-size: clamp(24px, 7vw, 36px); }
   }
@@ -142,11 +134,10 @@
 <body>
 
 <div class="bg-video">
-  <video id="bgVideo" autoplay muted loop playsinline webkit-playsinline>
-    <source src="/0328_loop.webm" type="video/webm">
+  <video id="bgVideo" autoplay muted loop playsinline preload="auto" poster="/poster.jpg">
     <source src="/0328_loop.mp4" type="video/mp4">
+    <source src="/0328_loop.webm" type="video/webm">
   </video>
-  <img src="/bg-mobile.gif" alt="" class="bg-mobile-img">
 </div>
 
 <div class="container">
@@ -158,11 +149,20 @@
 
 <script>
   const v = document.getElementById('bgVideo');
-  function fp() { if (v.paused) { v.muted = true; const p = v.play(); if (p) p.catch(() => {}); } }
-  fp();
-  ['touchstart','click'].forEach(e => document.addEventListener(e, function t() {
-    fp(); if (!v.paused) ['touchstart','click'].forEach(x => document.removeEventListener(x, t));
-  }, { passive: true }));
+  v.muted = true;
+  v.setAttribute('playsinline', '');
+  v.setAttribute('muted', '');
+  function tp() {
+    const p = v.play();
+    if (p) p.catch(() => {
+      ['touchstart','click'].forEach(e => document.addEventListener(e, function t() {
+        v.play(); document.removeEventListener(e, t);
+      }, { once: true, passive: true }));
+    });
+  }
+  setTimeout(tp, 200);
+  v.addEventListener('suspend', () => { if (v.paused) tp(); });
+  v.addEventListener('pause', () => { setTimeout(tp, 500); });
 </script>
 </body>
 </html>
