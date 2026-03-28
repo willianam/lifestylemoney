@@ -119,10 +119,16 @@
   /* === STEP === */
   .step {
     display: none;
+    flex-direction: column;
+  }
+
+  .step.active {
+    display: flex;
     animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
-  .step.active { display: flex; flex-direction: column; }
+  /* Step 0 visible immediately for LCP detection */
+  [data-step="0"].active { animation: none; opacity: 1; }
 
   /* === MANIFESTO (opening + closing) === */
   .manifesto {
