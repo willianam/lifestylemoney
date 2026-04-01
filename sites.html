@@ -1146,6 +1146,28 @@
       if (dx > 50 && ci > 0) goSlide(ci - 1);
       if (dx < -50 && ci < slides.length - 1) goSlide(ci + 1);
     }, { passive: true });
+
+    // === SCROLL-DRIVEN SLIDERS ===
+    // Quando o usuário rola a página e o slider está visível,
+    // o scroll vertical move o slider horizontalmente
+    document.querySelectorAll('.portfolio-track').forEach(track => {
+      const wrapper = track.closest('.portfolio-slider');
+
+      // Mouse wheel horizontal no slider
+      wrapper.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+          const maxScroll = track.scrollWidth - track.clientWidth;
+          const atStart = track.scrollLeft <= 0 && e.deltaY < 0;
+          const atEnd = track.scrollLeft >= maxScroll - 1 && e.deltaY > 0;
+
+          // Só bloqueia scroll vertical se o slider ainda tem conteúdo pra rolar
+          if (!atStart && !atEnd) {
+            e.preventDefault();
+            track.scrollBy({ left: e.deltaY * 2, behavior: 'smooth' });
+          }
+        }
+      }, { passive: false });
+    });
   </script>
 
 </body>
