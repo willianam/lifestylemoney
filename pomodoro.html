@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>Lifestyle Money — Pomodoro</title>
+<link rel="preload" href="/fonts/playfair-display.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/dm-sans.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  /* Core Fonts */
+  @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 400 700; font-display: swap; src: url('./fonts/playfair-display.woff2') format('woff2'); }
+  @font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 300 700; font-display: swap; src: url('./fonts/dm-sans.woff2') format('woff2'); }
+  @font-face { font-family: 'JetBrains Mono'; font-style: normal; font-weight: 400 500; font-display: optional; src: url('./fonts/jetbrains-mono.woff2') format('woff2'); }
+
+  :root {
+    --black-pure: #050505;
+    --green-bright: #4ebd73;
+    --green-glow: #6feca3;
+    --white-soft: #f0f5f1;
+    --white-muted: #c8d5cb;
+    --gray-green: #7a9a85;
+    --glass-bg: rgba(13, 26, 18, 0.55);
+    --glass-bg-hover: rgba(13, 26, 18, 0.7);
+    --glass-border: rgba(78, 189, 115, 0.15);
+    --glass-border-hover: rgba(78, 189, 115, 0.35);
+    --glass-blur: 16px;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --radius-sm: 8px;
+    --radius-lg: 24px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black-pure);
+    color: var(--white-soft);
+    font-family: var(--font-body);
+    font-weight: 300;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 20px 0;
+  }
+
+  /* Background Video */
+  .bg-video {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+  .bg-video video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .bg-video::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 5, 5, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Pomodoro Glass Card */
+  .pomodoro-container {
+    position: relative;
+    z-index: 10;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(78, 189, 115, 0.05);
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .pomodoro-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--green-bright), transparent);
+    opacity: 0.5;
+  }
+
+  .status-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    border: 1px solid var(--glass-border);
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: 100px;
+    background: rgba(13, 26, 18, 0.8);
+    margin-bottom: var(--space-xl);
+    transition: all 0.3s ease;
+  }
+
+  .timer-display {
+    font-family: var(--font-display);
+    font-size: clamp(64px, 15vw, 96px);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--white-soft);
+    margin-bottom: var(--space-lg);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+
+  /* Task & Settings */
+  .settings-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    cursor: pointer;
+    color: var(--gray-green);
+    transition: color 0.3s;
+    background: transparent;
+    border: none;
+    display: flex;
+  }
+  .settings-btn:hover { color: var(--green-bright); }
+  .settings-panel {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 24px;
+    width: 240px;
+    text-align: left;
+    background: rgba(10, 15, 12, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-md);
+    z-index: 100;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  .settings-panel.active { display: block; animation: fadeInUp 0.3s ease; }
+  .setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 13px;
+    font-family: var(--font-mono);
+    color: var(--white-muted);
+  }
+  .setting-row input {
+    width: 60px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    color: var(--white-soft);
+    padding: 6px;
+    font-family: var(--font-mono);
+    text-align: center;
+  }
+  .setting-row input:focus { outline: none; border-color: var(--green-bright); }
+  .task-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed rgba(78, 189, 115, 0.3);
+    color: var(--white-soft);
+    font-family: var(--font-body);
+    font-size: 18px;
+    text-align: center;
+    padding: 8px;
+    margin-top: -10px;
+    margin-bottom: var(--space-lg);
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  .task-input:focus { border-bottom-color: var(--green-bright); }
+  .task-input::placeholder { color: var(--gray-green); font-style: italic; }
+  .save-settings-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+    margin-top: 8px;
+  }
+
+  .cycle-indicator {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--gray-green);
+    margin-bottom: var(--space-xl);
+    letter-spacing: 2px;
+  }
+
+  /* Progress Bar */
+  .progress-track {
+    width: 100%;
+    height: 3px;
+    background: rgba(78, 189, 115, 0.1);
+    border-radius: 2px;
+    margin-bottom: var(--space-xl);
+    overflow: hidden;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: var(--green-bright);
+    width: 0%;
+    transition: width 1s linear;
+    box-shadow: 0 0 10px var(--green-bright);
+  }
+
+  /* Controls */
+  .controls-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .btn {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    padding: 14px 24px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-primary {
+    background: var(--green-bright);
+    color: var(--black-pure);
+    font-weight: 700;
+    flex: 1;
+  }
+
+  .btn-primary:hover {
+    background: var(--green-glow);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(78, 189, 115, 0.25);
+  }
+
+  .btn-primary:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(78, 189, 115, 0.3);
+  }
+
+  .btn-glass {
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--white-muted);
+    padding: 14px 18px;
+  }
+
+  .btn-glass:hover {
+    background: rgba(78, 189, 115, 0.05);
+    border-color: var(--green-bright);
+    color: var(--white-soft);
+  }
+
+  .btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 rgba(78, 189, 115, 0); }
+    50% { box-shadow: 0 0 15px rgba(78, 189, 115, 0.4); }
+    100% { box-shadow: 0 0 0 rgba(78, 189, 115, 0); }
+  }
+
+  .pulse {
+    animation: pulseGlow 2s infinite;
+  }
+
+  /* To-Do List */
+  .todo-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(78, 189, 115, 0.2), transparent);
+    margin: var(--space-lg) 0 var(--space-md) 0;
+  }
+  .todo-form {
+    display: flex;
+    margin-bottom: var(--space-md);
+  }
+  .todo-input {
+    font-size: 14px;
+    margin-bottom: 0;
+    text-align: left;
+    padding: 8px 12px;
+  }
+  .todo-list {
+    list-style: none;
+    text-align: left;
+    max-height: 160px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .todo-list::-webkit-scrollbar { width: 4px; }
+  .todo-list::-webkit-scrollbar-thumb { background: rgba(78, 189, 115, 0.3); border-radius: 4px; }
+  
+  .todo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 14px;
+    color: var(--white-soft);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .todo-item:last-child { border-bottom: none; }
+  .todo-item:hover { transform: translateX(2px); }
+  .todo-item.done {
+    text-decoration: line-through;
+    color: var(--gray-green);
+  }
+  .todo-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--green-bright);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+  .todo-item.done .todo-checkbox {
+    background: var(--green-bright);
+  }
+  .todo-item.done .todo-checkbox::after {
+    content: '✓';
+    color: var(--black-pure);
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  @media (max-width: 480px) {
+    .pomodoro-container {
+      margin: 20px;
+      padding: var(--space-lg);
+    }
+    .timer-display { font-size: 72px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- BG VIDEO -->
+<div class="bg-video">
+  <video id="bgVideo" autoplay muted loop playsinline preload="auto" poster="poster.avif">
+    <source src="0328_loop.mp4" type="video/mp4">
+    <source src="0328_loop.webm" type="video/webm">
+  </video>
+</div>
+
+<!-- CONTAINER -->
+<div class="pomodoro-container">
+  <button class="settings-btn" id="settingsToggleBtn" title="Configurações">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"></circle>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+    </svg>
+  </button>
+  
+  <div class="settings-panel" id="settingsPanel">
+    <div class="setting-row">
+      <span>Foco (min)</span>
+      <input type="number" id="focusInput" value="25" min="1" max="120">
+    </div>
+    <div class="setting-row">
+      <span>Pausa Curta (min)</span>
+      <input type="number" id="shortInput" value="5" min="1" max="60">
+    </div>
+    <div class="setting-row">
+      <span>Pausa Longa (min)</span>
+      <input type="number" id="longInput" value="15" min="1" max="60">
+    </div>
+    <div class="todo-divider" style="margin: 16px 0"></div>
+    <div class="setting-row">
+      <span>Som do Alarme</span>
+      <div style="display:flex; align-items:center">
+        <select id="soundInput" style="background: rgba(255, 255, 255, 0.05); color: var(--white-soft); border: 1px solid var(--glass-border); border-radius: 4px; padding: 4px; font-family: var(--font-body); outline: none;">
+          <option value="digital">Digital Beep</option>
+          <option value="bell">Soft Bell</option>
+          <option value="chime">Elegance Chime</option>
+          <option value="zen">Zen Bowl</option>
+        </select>
+        <button id="testSoundBtn" title="Testar Som" type="button" style="background:transparent; border:none; cursor:pointer; color:var(--green-bright); margin-left:8px; display:flex;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+        </button>
+      </div>
+    </div>
+    <div class="setting-row" style="margin-top:12px; justify-content:flex-start; gap:8px;">
+      <input type="checkbox" id="loopAlarmInput" style="width:16px; margin:0;">
+      <span>Tocar em loop até parar</span>
+    </div>
+    <button class="btn btn-primary save-settings-btn" id="saveSettingsBtn">Salvar</button>
+  </div>
+
+  <div class="status-badge" id="statusBadge">Foco</div>
+  <div id="taskInput" class="task-input" style="border-bottom:none; cursor: default; user-select: none;">Sem tarefas (adicione abaixo)</div>
+  
+  <div class="timer-display" id="timerDisplay">25:00</div>
+  
+  <div class="cycle-indicator" id="cycleIndicator">Ciclo 1 de 4</div>
+  
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <div class="controls-row">
+    <button class="btn btn-glass btn-icon" id="resetBtn" title="Resetar Timer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+    </button>
+    <button class="btn btn-primary" id="mainBtn">Iniciar</button>
+    <button class="btn btn-glass btn-icon" id="skipBtn" title="Pular">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+    </button>
+  </div>
+
+  <div class="todo-divider"></div>
+  <form id="todoForm" class="todo-form">
+    <input type="text" id="todoInput" class="task-input todo-input" placeholder="Adicionar na checklist (Enter)" autocomplete="off">
+  </form>
+  <ul class="todo-list" id="todoList">
+    <!-- Items added by JS -->
+  </ul>
+</div>
+
+<script>
+  // Modes configuration
+  let MODES = {
+    FOCUS: { name: 'Foco', seconds: 25 * 60, color: 'var(--green-bright)' },
+    SHORT_BREAK: { name: 'Pausa Curta', seconds: 5 * 60, color: '#f0f5f1' },
+    LONG_BREAK: { name: 'Pausa Longa', seconds: 15 * 60, color: '#6feca3' }
+  };
+
+  let currentMode = 'FOCUS';
+  let timeLeft = MODES[currentMode].seconds;
+  let totalTime = MODES[currentMode].seconds;
+  let cycles = 1;
+  const TOTAL_CYCLES = 4;
+  let timerInterval = null;
+  let isRunning = false;
+  let isRinging = false;
+  let alarmLoopInterval = null;
+  let loopAlarm = false;
+
+  // Audio Synthesizer
+  let audioCtx = null;
+  let selectedSound = 'digital';
+
+  function playOscillator(freq, type, attack, decay, vol) {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + attack);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + decay);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + decay + 0.1);
+  }
+
+  function playAlarmSound(overrideSound = null) {
+    const soundToPlay = overrideSound || selectedSound;
+    
+    if (soundToPlay === 'digital') {
+      playOscillator(880, 'sine', 0.05, 1.0, 0.5);
+      setTimeout(() => playOscillator(880, 'sine', 0.05, 1.0, 0.5), 200);
+    } else if (soundToPlay === 'bell') {
+      playOscillator(880, 'sine', 0.02, 2.0, 0.7);
+      playOscillator(1760, 'sine', 0.02, 1.5, 0.3);
+    } else if (soundToPlay === 'chime') {
+      playOscillator(523.25, 'sine', 0.05, 2.5, 0.6);
+      setTimeout(() => playOscillator(659.25, 'sine', 0.05, 2.5, 0.6), 150);
+      setTimeout(() => playOscillator(783.99, 'sine', 0.05, 3.5, 0.6), 300);
+    } else if (soundToPlay === 'zen') {
+      playOscillator(432, 'sine', 0.5, 4.0, 1.0);
+      playOscillator(435, 'sine', 0.5, 4.0, 0.3);
+    }
+  }
+
+  // DOM Elements
+  const timerDisplay = document.getElementById('timerDisplay');
+  const statusBadge = document.getElementById('statusBadge');
+  const cycleIndicator = document.getElementById('cycleIndicator');
+  const progressFill = document.getElementById('progressFill');
+  const mainBtn = document.getElementById('mainBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const skipBtn = document.getElementById('skipBtn');
+  
+  // Format MM:SS
+  function formatTime(seconds) {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  function updateUI() {
+    const formatted = formatTime(timeLeft);
+    timerDisplay.textContent = formatted;
+    
+    const progress = 100 - ((timeLeft / totalTime) * 100);
+    progressFill.style.width = `${progress}%`;
+    
+    let taskDisplay = document.getElementById('taskInput');
+    let taskName = (taskDisplay && taskDisplay.getAttribute('data-has-task') === 'true') ? taskDisplay.textContent.trim() : '';
+    let titleBase = taskName ? `${taskName} - ${MODES[currentMode].name}` : MODES[currentMode].name;
+    
+    document.title = isRunning ? `(${formatted}) ${titleBase}` : 'Lifestyle Money — Pomodoro';
+  }
+
+  function switchMode(newMode) {
+    currentMode = newMode;
+    timeLeft = MODES[currentMode].seconds;
+    totalTime = MODES[currentMode].seconds;
+    statusBadge.textContent = MODES[currentMode].name;
+    
+    if (newMode === 'FOCUS') {
+      cycleIndicator.textContent = `Ciclo ${cycles} de ${TOTAL_CYCLES}`;
+    } else {
+      cycleIndicator.textContent = MODES[currentMode].name;
+    }
+    
+    // Aesthetic changes
+    statusBadge.style.color = MODES[currentMode].color;
+    statusBadge.style.borderColor = newMode === 'FOCUS' ? 'var(--glass-border)' : 'rgba(255,255,255,0.2)';
+    
+    updateUI();
+  }
+
+  function toggleTimer() {
+    if (isRinging) {
+      isRinging = false;
+      clearInterval(alarmLoopInterval);
+      statusBadge.classList.remove('pulse');
+      mainBtn.textContent = 'Iniciar';
+      progressNextMode();
+      return;
+    }
+
+    if (isRunning) {
+      clearInterval(timerInterval);
+      isRunning = false;
+      mainBtn.textContent = 'Iniciar';
+      statusBadge.classList.remove('pulse');
+    } else {
+      isRunning = true;
+      mainBtn.textContent = 'Pausar';
+      statusBadge.classList.add('pulse');
+      
+      // Unlock audio context on first user interaction if needed
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateUI();
+        
+        if (timeLeft <= 0) {
+          handleTimeEnd();
+        }
+      }, 1000);
+    }
+    updateUI();
+  }
+
+  function progressNextMode() {
+    if (currentMode === 'FOCUS') {
+      if (cycles < TOTAL_CYCLES) switchMode('SHORT_BREAK');
+      else switchMode('LONG_BREAK');
+    } else {
+      if (currentMode === 'LONG_BREAK') cycles = 1;
+      else cycles++;
+      switchMode('FOCUS');
+    }
+  }
+
+  function handleTimeEnd() {
+    clearInterval(timerInterval);
+    isRunning = false;
+
+    if (loopAlarm) {
+      isRinging = true;
+      statusBadge.classList.add('pulse');
+      statusBadge.textContent = 'TEMPO ESGOTADO';
+      statusBadge.style.color = '#ff4d4d';
+      statusBadge.style.borderColor = '#ff4d4d';
+      mainBtn.textContent = 'Parar Alarme';
+      
+      playAlarmSound();
+      alarmLoopInterval = setInterval(playAlarmSound, 4000);
+    } else {
+      playAlarmSound();
+      statusBadge.classList.remove('pulse');
+      mainBtn.textContent = 'Iniciar';
+      progressNextMode();
+    }
+  }
+
+  function resetTimer() {
+    if (isRinging) {
+      isRinging = false;
+      clearInterval(alarmLoopInterval);
+      statusBadge.classList.remove('pulse');
+      mainBtn.textContent = 'Iniciar';
+      switchMode(currentMode);
+      return;
+    }
+    if (isRunning) toggleTimer();
+    timeLeft = totalTime;
+    updateUI();
+  }
+
+  function skipMode() {
+    if (isRunning) toggleTimer();
+    handleTimeEnd(); 
+    // Wait for handleTimeEnd to do logic, but it will beep, which isn't huge deal, or we can just logic it.
+  }
+
+  // Replace skipMode with clean logic to avoid beep when skipping
+  skipBtn.addEventListener('click', () => {
+    if (isRinging) {
+      isRinging = false;
+      clearInterval(alarmLoopInterval);
+      statusBadge.classList.remove('pulse');
+      mainBtn.textContent = 'Iniciar';
+    }
+    if (isRunning) toggleTimer();
+    progressNextMode();
+  });
+
+  mainBtn.addEventListener('click', toggleTimer);
+  resetBtn.addEventListener('click', resetTimer);
+
+  // Settings Logic
+  const settingsToggleBtn = document.getElementById('settingsToggleBtn');
+  const settingsPanel = document.getElementById('settingsPanel');
+  const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+  const focusInput = document.getElementById('focusInput');
+  const shortInput = document.getElementById('shortInput');
+  const longInput = document.getElementById('longInput');
+  const soundInput = document.getElementById('soundInput');
+  const testSoundBtn = document.getElementById('testSoundBtn');
+  const loopAlarmInput = document.getElementById('loopAlarmInput');
+  
+  settingsToggleBtn.addEventListener('click', () => {
+    settingsPanel.classList.toggle('active');
+  });
+
+  testSoundBtn.addEventListener('click', () => {
+    playAlarmSound(soundInput.value);
+  });
+
+  saveSettingsBtn.addEventListener('click', () => {
+    MODES.FOCUS.seconds = Math.max(1, parseInt(focusInput.value) || 25) * 60;
+    MODES.SHORT_BREAK.seconds = Math.max(1, parseInt(shortInput.value) || 5) * 60;
+    MODES.LONG_BREAK.seconds = Math.max(1, parseInt(longInput.value) || 15) * 60;
+    selectedSound = soundInput.value;
+    loopAlarm = loopAlarmInput.checked;
+    
+    settingsPanel.classList.remove('active');
+    
+    if (isRinging) {
+      isRinging = false;
+      clearInterval(alarmLoopInterval);
+      mainBtn.textContent = 'Iniciar';
+      statusBadge.classList.remove('pulse');
+    }
+    if (isRunning) toggleTimer();
+    switchMode(currentMode);
+  });
+
+  // Todo List Logic
+  const todoForm = document.getElementById('todoForm');
+  const todoInput = document.getElementById('todoInput');
+  const todoList = document.getElementById('todoList');
+  const taskDisplay = document.getElementById('taskInput');
+
+  function syncActiveTask() {
+    const openItems = document.querySelectorAll('.todo-item:not(.done) span');
+    if (openItems.length > 0) {
+      taskDisplay.textContent = openItems[0].textContent;
+      taskDisplay.style.color = 'var(--white-soft)';
+      taskDisplay.style.fontStyle = 'normal';
+      taskDisplay.setAttribute('data-has-task', 'true');
+    } else {
+      taskDisplay.textContent = 'Sem tarefas ativas';
+      taskDisplay.style.color = 'var(--gray-green)';
+      taskDisplay.style.fontStyle = 'italic';
+      taskDisplay.setAttribute('data-has-task', 'false');
+    }
+    updateUI();
+  }
+  
+  todoForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = todoInput.value.trim();
+    if (!text) return;
+    
+    addTodoItem(text);
+    todoInput.value = '';
+    syncActiveTask();
+  });
+  
+  function addTodoItem(text) {
+    const li = document.createElement('li');
+    li.className = 'todo-item';
+    li.innerHTML = `
+      <div class="todo-checkbox"></div>
+      <span>${text}</span>
+    `;
+    
+    li.addEventListener('click', () => {
+      li.classList.toggle('done');
+      syncActiveTask();
+    });
+    
+    todoList.appendChild(li);
+    todoList.scrollTop = todoList.scrollHeight; // Scroll to bottom
+  }
+
+  // Initial State
+  syncActiveTask();
+
+  // Video Autoplay fix for background
+  const bgVideo = document.getElementById('bgVideo');
+  function tryPlay() {
+    const p = bgVideo.play();
+    if (p) p.catch(() => {
+      ['touchstart', 'click'].forEach(evt => {
+        document.addEventListener(evt, function t() {
+          bgVideo.play();
+          document.removeEventListener(evt, t);
+        }, { once: true, passive: true });
+      });
+    });
+  }
+  setTimeout(tryPlay, 200);
+</script>
+</body>
+</html>
