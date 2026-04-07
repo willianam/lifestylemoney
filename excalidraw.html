@@ -237,20 +237,18 @@
         }
     });
 
-    // 2. React Bootstrapper with persistence
+    // 2. React Bootstrapper
     const el = React.createElement;
-    const saved = localStorage.getItem('excalidrawData');
-    const parsed = saved ? JSON.parse(saved) : null;
+    // Trocamos a key para ignorar o 'excalidrawData' antigo que estava corrompendo a UI
+    const saved = localStorage.getItem('excalidrawElements');
+    const parsedElements = saved ? JSON.parse(saved) : null;
 
     function App() {
-        // Callback to persist every change
+        // Salvamos EXCLUSIVAMENTE os elements. Salvar o appState inteiro quebra a interface gráfica nativa deles.
         const onChange = (elements, appState) => {
-            const data = { elements, appState };
-            localStorage.setItem('excalidrawData', JSON.stringify(data));
+            localStorage.setItem('excalidrawElements', JSON.stringify(elements));
         };
-        // Configuramos a chamada do Excalidraw Oficial
-        // Usamos as flags 'theme' para dark 
-        // e passamos um initialData para o viewBackgroundColor ficar transparent.
+
         return el(
             React.Fragment,
             null,
@@ -261,13 +259,14 @@
                     theme: "dark",
                     UIOptions: {
                         canvasActions: {
-                            changeViewBackgroundColor: false, // Forçaremos a ser invisivel
+                            changeViewBackgroundColor: false, 
                         }
                     },
-                    initialData: parsed ? { elements: parsed.elements, appState: { ...parsed.appState, viewBackgroundColor: "transparent" } } : {
+                    initialData: { 
+                        elements: parsedElements || [],
                         appState: {
                             viewBackgroundColor: "transparent",
-                            currentItemStrokeColor: "#4ebd73", // Cor de desenho default
+                            currentItemStrokeColor: "#4ebd73",
                             currentItemBackgroundColor: "transparent"
                         }
                     },
