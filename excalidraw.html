@@ -237,16 +237,23 @@
         }
     });
 
-    // 2. React Bootstrapper
+    // 2. React Bootstrapper with persistence
     const el = React.createElement;
+    const saved = localStorage.getItem('excalidrawData');
+    const parsed = saved ? JSON.parse(saved) : null;
 
     function App() {
+        // Callback to persist every change
+        const onChange = (elements, appState) => {
+            const data = { elements, appState };
+            localStorage.setItem('excalidrawData', JSON.stringify(data));
+        };
         // Configuramos a chamada do Excalidraw Oficial
         // Usamos as flags 'theme' para dark 
         // e passamos um initialData para o viewBackgroundColor ficar transparent.
         return el(
-            React.Fragment, 
-            null, 
+            React.Fragment,
+            null,
             el(
                 "div",
                 { style: { height: "100%", width: "100%" } },
@@ -257,13 +264,14 @@
                             changeViewBackgroundColor: false, // Forçaremos a ser invisivel
                         }
                     },
-                    initialData: {
+                    initialData: parsed ? { elements: parsed.elements, appState: { ...parsed.appState, viewBackgroundColor: "transparent" } } : {
                         appState: {
                             viewBackgroundColor: "transparent",
                             currentItemStrokeColor: "#4ebd73", // Cor de desenho default
                             currentItemBackgroundColor: "transparent"
                         }
-                    }
+                    },
+                    onChange: onChange
                 })
             )
         );
