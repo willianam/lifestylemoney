@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#050505">
+  <title>Lifestyle Money — Funnel Strategy</title>
+
+  <!-- Tipografia Exata -->
+  <link rel="preload" href="fonts/dm-sans.woff2" as="font" type="font/woff2" crossorigin>
+  
+  <style>
+    @font-face {
+        font-family: 'DM Sans';
+        font-style: normal;
+        font-weight: 300 700;
+        font-display: swap;
+        src: url('fonts/dm-sans.woff2') format('woff2');
+    }
+
+    :root {
+        --black-pure: #050505;
+        --green-bright: #4ebd73;
+        --glass-bg: rgba(13, 26, 18, 0.55);
+        --glass-border: rgba(78, 189, 115, 0.15);
+        --glass-border-hover: rgba(78, 189, 115, 0.4);
+        --glass-blur: 16px;
+        --font-body: 'DM Sans', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        background: var(--black-pure);
+        color: white;
+        font-family: var(--font-body);
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* === BACKGROUND VIDEO === */
+    .bg-video {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .bg-video video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .bg-video::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(5, 5, 5, 0.85); /* Muito escuro mas ainda permitindo ver o video sutilmente */
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+    
+    .bg-video.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* === CONTAINER DO EXCALIDRAW === */
+    #app {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 10;
+        /* O Excalidraw tomará 100% dessa div */
+    }
+
+    /* OVERRIDE DA LOUCURA DO EXCALIDRAW PARA TRANSPARENCIA */
+    .excalidraw {
+      --color-primary: var(--green-bright) !important;
+      --color-primary-darker: var(--green-glow) !important;
+      --color-primary-darkest: #85f2b3 !important;
+      --color-primary-light: rgba(78, 189, 115, 0.1) !important;
+    }
+    /* Forçando a prancheta invisível para vazar para nosso video em Z-Index */
+    .excalidraw,
+    .excalidraw__canvas {
+        background-color: transparent !important;
+    }
+
+    /* === BOTÃO DE TOGGLE CUSTOMIZADO === */
+    .brand-layer {
+        position: absolute;
+        z-index: 50; /* Acima do excalidraw */
+        bottom: 80px; /* Canto inferior esquerdo geralmente é vazio no Excalidraw */
+        left: 24px;
+        pointer-events: auto;
+        display: flex;
+        gap: 16px;
+        cursor: grab;
+    }
+    
+    .brand-layer:active {
+        cursor: grabbing;
+    }
+
+    .btn-glass {
+        pointer-events: auto;
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        color: var(--white-soft);
+        background: var(--glass-bg);
+        backdrop-filter: blur(var(--glass-blur));
+        border: 1px solid var(--glass-border);
+        padding: 10px 24px;
+        border-radius: 100px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-glass:hover {
+        border-color: var(--green-bright);
+        background: rgba(13, 26, 18, 0.8);
+    }
+
+    .btn-glass.active {
+        color: #fff;
+        border-color: #ff4757;
+        background: rgba(255, 71, 87, 0.1);
+    }
+    .btn-glass.active svg { stroke: #ff4757; }
+  </style>
+
+  <!-- Bibliotecas React UMD -->
+  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  
+  <!-- Pacote Excalidraw Oficial -->
+  <!-- Carregando CSS para os ícones e paineis não quebrarem e Script com engine da Lousa -->
+  <link rel="stylesheet" href="https://unpkg.com/@excalidraw/excalidraw@0.17.6/dist/excalidraw.production.min.css"/>
+  <script src="https://unpkg.com/@excalidraw/excalidraw@0.17.6/dist/excalidraw.production.min.js"></script>
+
+</head>
+<body>
+
+  <!-- BG VIDEO -->
+  <div class="bg-video" id="videoLayer">
+    <video autoplay muted loop playsinline preload="auto" poster="poster.avif">
+      <source src="0328_loop.mp4" type="video/mp4">
+      <source src="0328_loop.webm" type="video/webm">
+    </video>
+  </div>
+
+  <!-- BOTOES DE MARCA -->
+  <div class="brand-layer">
+    <button class="btn-glass" id="btnToggleVideo">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line>
+        </svg>
+        <span>Desativar Vídeo Fundo</span>
+    </button>
+  </div>
+
+  <!-- CONTAINER DE RENDERIZACAO REACT -->
+  <div id="app"></div>
+
+  <!-- ENGINE -->
+  <script>
+    // 0. Lógica de Drag and Drop para o Botão
+    const brandLayer = document.querySelector('.brand-layer');
+    let isDragging = false;
+    let currentX = 0, currentY = 0;
+    let initialX = 0, initialY = 0;
+    let xOffset = 0, yOffset = 0;
+    let hasDragged = false;
+
+    brandLayer.addEventListener("pointerdown", dragStart, false);
+    document.addEventListener("pointerup", dragEnd, false);
+    document.addEventListener("pointermove", drag, false);
+
+    function dragStart(e) {
+      initialX = e.clientX - xOffset;
+      initialY = e.clientY - yOffset;
+      if (e.target.closest('.brand-layer')) {
+        isDragging = true;
+        hasDragged = false;
+      }
+    }
+
+    function dragEnd(e) {
+      initialX = currentX;
+      initialY = currentY;
+      isDragging = false;
+    }
+
+    function drag(e) {
+      if (isDragging) {
+        e.preventDefault();
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+        xOffset = currentX;
+        yOffset = currentY;
+        brandLayer.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+        hasDragged = true;
+      }
+    }
+
+    // 1. Lógica do Toggle do Vídeo
+    const btnVideo = document.getElementById('btnToggleVideo');
+    const videoLayer = document.getElementById('videoLayer');
+    const videoElem = videoLayer.querySelector('video');
+    
+    let isVideoPlaying = true;
+
+    btnVideo.addEventListener('click', (e) => {
+        if (hasDragged) return; // Impede o clique fantasma se o botão foi apenas arrastado
+        
+        isVideoPlaying = !isVideoPlaying;
+        if(isVideoPlaying) {
+            videoLayer.classList.remove('hidden');
+            videoElem.play();
+            btnVideo.classList.remove('active');
+            btnVideo.querySelector('span').innerText = "Desativar Vídeo Fundo";
+        } else {
+            videoLayer.classList.add('hidden');
+            videoElem.pause();
+            btnVideo.classList.add('active');
+            btnVideo.querySelector('span').innerText = "Reativar Vídeo Fundo";
+        }
+    });
+
+    // 2. React Bootstrapper
+    const el = React.createElement;
+
+    function App() {
+        // Configuramos a chamada do Excalidraw Oficial
+        // Usamos as flags 'theme' para dark 
+        // e passamos um initialData para o viewBackgroundColor ficar transparent.
+        return el(
+            React.Fragment, 
+            null, 
+            el(
+                "div",
+                { style: { height: "100%", width: "100%" } },
+                el(ExcalidrawLib.Excalidraw, {
+                    theme: "dark",
+                    UIOptions: {
+                        canvasActions: {
+                            changeViewBackgroundColor: false, // Forçaremos a ser invisivel
+                        }
+                    },
+                    initialData: {
+                        appState: {
+                            viewBackgroundColor: "transparent",
+                            currentItemStrokeColor: "#4ebd73", // Cor de desenho default
+                            currentItemBackgroundColor: "transparent"
+                        }
+                    }
+                })
+            )
+        );
+    }
+
+    // 3. Montar no DOM
+    const container = document.getElementById('app');
+    const root = ReactDOM.createRoot(container);
+    root.render(el(App));
+
+  </script>
+
+</body>
+</html>
